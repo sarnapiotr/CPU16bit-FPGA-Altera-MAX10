@@ -50,7 +50,45 @@ begin
 							end case;
 							
 						when "001" =>
-						
+							case IR(12 downto 9) is
+								when "0000" =>
+								
+								when "0001" =>
+								
+								when "0010" =>
+								
+								when "0011" =>
+								
+								when "0100" =>
+								
+								when "0101" =>
+								
+								when "0110" =>
+								
+								when "0111" =>
+								
+								when "1000" =>
+								
+								when "1001" =>
+								
+								when "1010" =>
+								
+								when "1011" =>
+								
+								when "1100" =>
+								
+								when "1101" =>
+								
+								when "1110" =>
+								
+								when "1111" =>
+								
+								when others =>
+									if INT = '0' then state <= m0;
+									else state <= m11;
+									end if;
+							end case;
+							
 						when "010" =>
 						
 						when "011" =>
@@ -64,7 +102,7 @@ begin
 							else state <= m11;
 							end if;
 					end case;
-				
+
 				when m10 =>
 					if INT = '1' then state <= m11;
 					else state <= m10;
@@ -81,11 +119,21 @@ begin
 					else state <= m11;
 					end if;
 				
+				when m15 => state <= m16;
+				
+				when m16 => state <= m17;
+				
+				when m17 =>
+					if INT = '0' then state <= m0;
+					else state <= m11;
+					end if;
+				
 				when others =>
 					if INT = '0' then state <= m0;
 					else state <= m11;
 					end if;
 			end case;
+			
 		end if;
 	end process;
 	
@@ -106,7 +154,7 @@ begin
 				
 			when m11 => -- PCl to stack
 				Sa <= "10"; Sid <= "011"; Sbb <= "10101"; Sbc <= "00000"; Sba <= "00000"; Salu <= "00000"; LDF <= '0';
-				Smar <= '1'; Smbr <= '1'; WR <= '0'; RD <= '0'; INTout <= '1';
+				Smar <= '1'; Smbr <= '1'; WR <= '1'; RD <= '0'; INTout <= '1';
 				
 			when m12 => -- PCh to stack
 				Sa <= "10"; Sid <= "011"; Sbb <= "10100"; Sbc <= "00000"; Sba <= "00000"; Salu <= "00000"; LDF <= '0';
@@ -114,11 +162,30 @@ begin
 				
 			when m13 => -- ATMPl to PCl
 				Sa <= "00"; Sid <= "000"; Sbb <= "11001"; Sbc <= "00000"; Sba <= "10101"; Salu <= "00000"; LDF <= '0';
-				Smar <= '0'; Smbr <= '0'; WR <= '1'; RD <= '0'; INTout <= '1';
+				Smar <= '0'; Smbr <= '0'; WR <= '0'; RD <= '0'; INTout <= '1';
 				
 			when m14 => -- ATMPh to PCh
 				Sa <= "00"; Sid <= "000"; Sbb <= "11000"; Sbc <= "00000"; Sba <= "10100"; Salu <= "00000"; LDF <= '0';
 				Smar <= '0'; Smbr <= '0'; WR <= '0'; RD <= '0'; INTout <= '1';
+				
+			when m15 => -- SP++
+				Sa <= "00"; Sid <= "010"; Sbb <= "00000"; Sbc <= "00000"; Sba <= "00000"; Salu <= "00000"; LDF <= '0';
+				Smar <= '0'; Smbr <= '0'; WR <= '0'; RD <= '0'; INTout <= '0';
+				
+			when m16 => -- stack to PCh SP++
+				Sa <= "10"; Sid <= "010"; Sbb <= "00000"; Sbc <= "00000"; Sba <= "10100"; Salu <= "00000"; LDF <= '0';
+				Smar <= '1'; Smbr <= '0'; WR <= '0'; RD <= '1'; INTout <= '0';
+				
+			when m17 => -- stack to PCl
+				Sa <= "10"; Sid <= "000"; Sbb <= "00000"; Sbc <= "00000"; Sba <= "10101"; Salu <= "00000"; LDF <= '0';
+				Smar <= '1'; Smbr <= '0'; WR <= '0'; RD <= '1'; INTout <= '0';
+			
+			
+			
+			
+			
+			
+			
 			
 			when others =>
 				Sa <= "00"; Sid <= "000"; Sbb <= "00000"; Sbc <= "00000"; Sba <= "00000"; Salu <= "00000"; LDF <= '0';
