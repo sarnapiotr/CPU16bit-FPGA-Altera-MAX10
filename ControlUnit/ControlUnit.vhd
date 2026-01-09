@@ -15,7 +15,8 @@ port(
 end ControlUnit;
 
 architecture rtl of ControlUnit is
-	type state_type is (m0, m1, m10, m11, m12, m13m, m14, m15);
+	type state_type is (m0, m1, m10, m11, m12, m13, m14, m15, m16, m17,
+							  m20, m21, m22, m23, m24, m25, m26, m27, m28, m29, m30, m31, m32, m33, m34, m35, m36);
 	signal state : state_type;
 begin
 	process(clk, reset)
@@ -25,8 +26,7 @@ begin
 			
 		elsif rising_edge(clk) then
 			case state is
-				when m0 =>
-					state <= m1;
+				when m0 => state <= m1;
 					
 				when m1 =>
 					case IR(15 downto 13) is
@@ -51,37 +51,37 @@ begin
 							
 						when "001" =>
 							case IR(12 downto 9) is
-								when "0000" =>
+								when "0000" => state <= m20;
 								
-								when "0001" =>
+								when "0001" => state <= m21;
 								
-								when "0010" =>
+								when "0010" => state <= m23;
 								
-								when "0011" =>
+								when "0011" => state <= m24;
 								
-								when "0100" =>
+								when "0100" => state <= m25;
 								
-								when "0101" =>
+								when "0101" => state <= m26;
 								
-								when "0110" =>
+								when "0110" => state <= m27;
 								
-								when "0111" =>
+								when "0111" => state <= m28;
 								
-								when "1000" =>
+								when "1000" => state <= m29;
 								
-								when "1001" =>
+								when "1001" => state <= m30;
 								
-								when "1010" =>
+								when "1010" => state <= m31;
 								
-								when "1011" =>
+								when "1011" => state <= m32;
 								
-								when "1100" =>
+								when "1100" => state <= m33;
 								
-								when "1101" =>
+								when "1101" => state <= m34;
 								
-								when "1110" =>
+								when "1110" => state <= m35;
 								
-								when "1111" =>
+								when "1111" => state <= m36;
 								
 								when others =>
 									if INT = '0' then state <= m0;
@@ -114,19 +114,16 @@ begin
 				
 				when m13 => state <= m14;
 				
-				when m14 =>
-					if INT = '0' then state <= m0;
-					else state <= m11;
-					end if;
-				
 				when m15 => state <= m16;
 				
 				when m16 => state <= m17;
 				
-				when m17 =>
+				when m21 => state <= m22;
+				
+				when m14 | m17 | m20 | m22 | m23 | m24 | m25 | m26 | m27 | m28 | m29 | m30 | m31 | m32 | m33 | m34 | m35 | m36 =>
 					if INT = '0' then state <= m0;
 					else state <= m11;
-					end if;
+					end if;			
 				
 				when others =>
 					if INT = '0' then state <= m0;
@@ -147,6 +144,8 @@ begin
 			when m1 => -- Decode
 				Sa <= "00"; Sid <= "000"; Sbb <= "00000"; Sbc <= "00000"; Sba <= "00000"; Salu <= "00000"; LDF <= '0';
 				Smar <= '0'; Smbr <= '0'; WR <= '0'; RD <= '0'; INTout <= '0';
+				
+			-- Group 000
 				
 			when m10 => -- Wait
 				Sa <= "00"; Sid <= "000"; Sbb <= "00000"; Sbc <= "00000"; Sba <= "00000"; Salu <= "00000"; LDF <= '0';
@@ -179,12 +178,78 @@ begin
 			when m17 => -- stack to PCl
 				Sa <= "10"; Sid <= "000"; Sbb <= "00000"; Sbc <= "00000"; Sba <= "10101"; Salu <= "00000"; LDF <= '0';
 				Smar <= '1'; Smbr <= '0'; WR <= '0'; RD <= '1'; INTout <= '0';
+				
+			-- Group 001
 			
+			when m20 => -- R to stack
+				Sa <= "10"; Sid <= "011"; Sbb <= IR(4 downto 0); Sbc <= "00000"; Sba <= "00000"; Salu <= "00000"; LDF <= '0';
+				Smar <= '1'; Smbr <= '1'; WR <= '1'; RD <= '0'; INTout <= '0';
+				
+			when m21 => -- SP++
+				Sa <= "00"; Sid <= "010"; Sbb <= "00000"; Sbc <= "00000"; Sba <= "00000"; Salu <= "00000"; LDF <= '0';
+				Smar <= '0'; Smbr <= '0'; WR <= '0'; RD <= '0'; INTout <= '0';
+				
+			when m22 => -- stack to R
+				Sa <= "10"; Sid <= "000"; Sbb <= "00000"; Sbc <= "00000"; Sba <= IR(4 downto 0); Salu <= "00000"; LDF <= '0';
+				Smar <= '1'; Smbr <= '0'; WR <= '0'; RD <= '1'; INTout <= '0';
 			
+			when m23 => -- -R
+				Sa <= "00"; Sid <= "000"; Sbb <= IR(4 downto 0); Sbc <= "00000"; Sba <= IR(4 downto 0); Salu <= "01001"; LDF <= '1';
+				Smar <= '0'; Smbr <= '0'; WR <= '0'; RD <= '0'; INTout <= '0';
+				
+			when m24 => -- R++
+				Sa <= "00"; Sid <= "000"; Sbb <= IR(4 downto 0); Sbc <= "00000"; Sba <= IR(4 downto 0); Salu <= "01101"; LDF <= '1';
+				Smar <= '0'; Smbr <= '0'; WR <= '0'; RD <= '0'; INTout <= '0';
+				
+			when m25 => -- R--
+				Sa <= "00"; Sid <= "000"; Sbb <= IR(4 downto 0); Sbc <= "00000"; Sba <= IR(4 downto 0); Salu <= "10000"; LDF <= '1';
+				Smar <= '0'; Smbr <= '0'; WR <= '0'; RD <= '0'; INTout <= '0';
+				
+			when m26 => -- not R
+				Sa <= "00"; Sid <= "000"; Sbb <= IR(4 downto 0); Sbc <= "00000"; Sba <= IR(4 downto 0); Salu <= "01000"; LDF <= '1';
+				Smar <= '0'; Smbr <= '0'; WR <= '0'; RD <= '0'; INTout <= '0';
+				
+			when m27 => -- shr R
+				Sa <= "00"; Sid <= "000"; Sbb <= IR(4 downto 0); Sbc <= "00000"; Sba <= IR(4 downto 0); Salu <= "01111"; LDF <= '1';
+				Smar <= '0'; Smbr <= '0'; WR <= '0'; RD <= '0'; INTout <= '0';
+				
+			when m28 => -- shl R
+				Sa <= "00"; Sid <= "000"; Sbb <= IR(4 downto 0); Sbc <= "00000"; Sba <= IR(4 downto 0); Salu <= "01110"; LDF <= '1';
+				Smar <= '0'; Smbr <= '0'; WR <= '0'; RD <= '0'; INTout <= '0';
+				
+			when m29 => -- RAM to R
+				Sa <= "00"; Sid <= "000"; Sbb <= "00000"; Sbc <= "00000"; Sba <= IR(4 downto 0); Salu <= "00000"; LDF <= '0';
+				Smar <= '1'; Smbr <= '0'; WR <= '0'; RD <= '1'; INTout <= '0';
+				
+			when m30 => -- R to RAM
+				Sa <= "00"; Sid <= "000"; Sbb <= IR(4 downto 0); Sbc <= "00000"; Sba <= "00000"; Salu <= "00000"; LDF <= '0';
+				Smar <= '1'; Smbr <= '1'; WR <= '1'; RD <= '0'; INTout <= '0';
+				
+			when m31 => -- R = R + TMP
+				Sa <= "00"; Sid <= "000"; Sbb <= IR(4 downto 0); Sbc <= "00001"; Sba <= IR(4 downto 0); Salu <= "00010"; LDF <= '1';
+				Smar <= '0'; Smbr <= '0'; WR <= '0'; RD <= '0'; INTout <= '0';
+				
+			when m32 => -- R = R - TMP
+				Sa <= "00"; Sid <= "000"; Sbb <= IR(4 downto 0); Sbc <= "00001"; Sba <= IR(4 downto 0); Salu <= "00011"; LDF <= '1';
+				Smar <= '0'; Smbr <= '0'; WR <= '0'; RD <= '0'; INTout <= '0';
+				
+			when m33 => -- CMP(TMP, R)
+				Sa <= "00"; Sid <= "000"; Sbb <= IR(4 downto 0); Sbc <= "00001"; Sba <= "00000"; Salu <= "00011"; LDF <= '1';
+				Smar <= '0'; Smbr <= '0'; WR <= '0'; RD <= '0'; INTout <= '0';
+				
+			when m34 => -- R = R and TMP
+				Sa <= "00"; Sid <= "000"; Sbb <= IR(4 downto 0); Sbc <= "00001"; Sba <= IR(4 downto 0); Salu <= "00101"; LDF <= '1';
+				Smar <= '0'; Smbr <= '0'; WR <= '0'; RD <= '0'; INTout <= '0';
+				
+			when m35 => -- R = TMP or R
+				Sa <= "00"; Sid <= "000"; Sbb <= IR(4 downto 0); Sbc <= "00001"; Sba <= IR(4 downto 0); Salu <= "00100"; LDF <= '1';
+				Smar <= '0'; Smbr <= '0'; WR <= '0'; RD <= '0'; INTout <= '0';
+				
+			when m36 => -- R = TMP xor R
+				Sa <= "00"; Sid <= "000"; Sbb <= IR(4 downto 0); Sbc <= "00001"; Sba <= IR(4 downto 0); Salu <= "00110"; LDF <= '1';
+				Smar <= '0'; Smbr <= '0'; WR <= '0'; RD <= '0'; INTout <= '0';
 			
-			
-			
-			
+			-- Group 011
 			
 			
 			when others =>
