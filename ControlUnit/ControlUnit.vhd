@@ -16,7 +16,7 @@ end ControlUnit;
 
 architecture rtl of ControlUnit is
 	type state_type is (m0, m1, m10, m11, m12, m13, m14, m15, m16, m17,
-							  m20, m21, m22, m23, m24, m25, m26, m27, m28, m29, m30, m31, m32, m33, m34, m35, m36);
+							  m20, m21, m22, m23, m24, m25, m26, m27, m28, m29, m30, m31, m32, m33, m34, m35, m36, m40, m41);
 	signal state : state_type;
 begin
 	process(clk, reset)
@@ -89,7 +89,7 @@ begin
 									end if;
 							end case;
 							
-						when "010" =>
+						when "010" => state <= m40;
 						
 						when "011" =>
 						
@@ -120,7 +120,22 @@ begin
 				
 				when m21 => state <= m22;
 				
-				when m14 | m17 | m20 | m22 | m23 | m24 | m25 | m26 | m27 | m28 | m29 | m30 | m31 | m32 | m33 | m34 | m35 | m36 =>
+				when m40 =>
+					if IR(12 downto 11) = "00" then state <= m41;
+						
+					elsif IR(12 downto 11) = "01" and C = '1' then state <= m41;
+					
+					elsif IR(12 downto 11) = "10" and Z = '1' then state <= m41;
+					
+					elsif IR(12 downto 11) = "11" and S = '1' then state <= m41;
+					
+					else
+						if INT = '0' then state <= m0;
+						else state <= m11;
+						end if;
+					end if;
+				
+				when m14 | m17 | m20 | m22 | m23 | m24 | m25 | m26 | m27 | m28 | m29 | m30 | m31 | m32 | m33 | m34 | m35 | m36 | m41 =>
 					if INT = '0' then state <= m0;
 					else state <= m11;
 					end if;			
@@ -251,7 +266,14 @@ begin
 			
 			-- Group 011
 			
-			
+			when m40 => -- Fetch ST16
+				Sa <= "01"; Sid <= "001"; Sbb <= "00000"; Sbc <= "00000"; Sba <= "00000"; Salu <= "00000"; LDF <= '0';
+				Smar <= '1'; Smbr <= '0'; WR <= '0'; RD <= '1'; INTout <= '0';
+				
+			when m41 => -- IR to PCl
+				Sa <= "00"; Sid <= "000"; Sbb <= "00000"; Sbc <= "00000"; Sba <= "10101"; Salu <= "00000"; LDF <= '0';
+				Smar <= '0'; Smbr <= '0'; WR <= '0'; RD <= '0'; INTout <= '0';
+				
 			when others =>
 				Sa <= "00"; Sid <= "000"; Sbb <= "00000"; Sbc <= "00000"; Sba <= "00000"; Salu <= "00000"; LDF <= '0';
 				Smar <= '0'; Smbr <= '0'; WR <= '0'; RD <= '0'; INTout <= '0';
