@@ -15,8 +15,13 @@ port(
 end ControlUnit;
 
 architecture rtl of ControlUnit is
-	type state_type is (m0, m1, m10, m11, m12, m13, m14, m15, m16, m17,
-							  m20, m21, m22, m23, m24, m25, m26, m27, m28, m29, m30, m31, m32, m33, m34, m35, m36, m40, m41, m50, m51, m52);
+	type state_type is (m0, m1,																										-- Fetch Decode
+							  m10, m11, m12, m13, m14, m15, m16, m17,																-- Group 000
+							  m20, m21, m22, m23, m24, m25, m26, m27, m28, m29, m30, m31, m32, m33, m34, m35, m36, -- Group 001
+							  m40, m41,																										-- Group 010
+							  m50, m51, m52,																								-- Group 011
+							  m60, m61, m62, m63, m64, m65, m66, m67, m68, m69, m70											-- Group 100
+							  );
 	signal state : state_type;
 begin
 	process(clk, reset)
@@ -303,7 +308,7 @@ begin
 				Sa <= "01"; Sid <= "001"; Sbb <= "00000"; Sbc <= "00000"; Sba <= "00000"; Salu <= "00000"; LDF <= '0';
 				Smar <= '1'; Smbr <= '0'; WR <= '0'; RD <= '1'; INTout <= '0';
 				
-			when m41 => -- IR to PCl
+			when m41 => -- DI to PCl
 				Sa <= "00"; Sid <= "000"; Sbb <= "00000"; Sbc <= "00000"; Sba <= "10101"; Salu <= "00000"; LDF <= '0';
 				Smar <= '0'; Smbr <= '0'; WR <= '0'; RD <= '0'; INTout <= '0';
 				
@@ -331,7 +336,7 @@ begin
 				Sa <= "00"; Sid <= "000"; Sbb <= "00000"; Sbc <= "00000"; Sba <= IR(4 downto 0); Salu <= "00000"; LDF <= '0';
 				Smar <= '0'; Smbr <= '0'; WR <= '0'; RD <= '0'; INTout <= '0';
 				
-			when m62 => -- IR to ADl
+			when m62 => -- DI to ADl
 				Sa <= "00"; Sid <= "000"; Sbb <= "00000"; Sbc <= "00000"; Sba <= "10011"; Salu <= "00000"; LDF <= '0';
 				Smar <= '0'; Smbr <= '0'; WR <= '0'; RD <= '0'; INTout <= '0';
 				
