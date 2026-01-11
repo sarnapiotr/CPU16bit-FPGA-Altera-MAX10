@@ -20,8 +20,8 @@ architecture rtl of ControlUnit is
 							  m20, m21, m22, m23, m24, m25, m26, m27, m28, m29, m30, m31, m32, m33, m34, m35, m36, -- Group 001
 							  m40, m41,																										-- Group 010
 							  m50, m51, m52,																								-- Group 011
-							  m60, m61, m62, m63, m64, m65, m66, m67, m68, m69, m70											-- Group 100
-							  );
+							  m60, m61, m62, m63, m64, m65, m66, m67, m68, m69, m70,											-- Group 100
+							  m80, m81, m82, m83, m84, m85, m86, m87, m88, m89, m90, m91, m92);							-- Group 101
 	signal state : state_type;
 begin
 	process(clk, reset)
@@ -100,7 +100,7 @@ begin
 						
 						when "100" => state <= m60;
 						
-						when "101" =>
+						when "101" => state <= m80;
 						
 						when others =>
 							if INT = '0' then state <= m0;
@@ -172,8 +172,43 @@ begin
 				
 				when m63 => state <= m64;
 				
+				when m80 => state <= m81;
+				
+				when m81 => state <= m82;
+				
+				when m82 =>
+					if IR(12 downto 10) = "001" then
+						state <= m83;
+					else
+						state <= m84;
+					end if;
+				
+				when m84 => state <= m85;
+				
+				when m85 =>
+					case IR(12 downto 10) is
+						when "000" => state <= m86;
+						
+						when "010" => state <= m87;
+						
+						when "011" => state <= m88;
+						
+						when "100" => state <= m89;
+						
+						when "101" => state <= m90;
+						
+						when "110" => state <= m91;
+						
+						when "111" => state <= m92;
+						
+						when others =>
+							if INT = '0' then state <= m0;
+							else state <= m11;
+							end if;
+					end case;
+				
 				when m14 | m17 | m20 | m22 | m23 | m24 | m25 | m26 | m27 | m28 | m29 | m30 | m31 | m32 | m33 | m34 | m35 | m36 | m41 | m52 |
-					  m61 | m64 | m65 | m66 | m67 | m68 | m69 | m70 =>
+					  m61 | m64 | m65 | m66 | m67 | m68 | m69 | m70 | m83 | m86 | m87 | m88 | m89 | m90 | m91 | m92 =>
 					if INT = '0' then state <= m0;
 					else state <= m11;
 					end if;			
@@ -372,6 +407,60 @@ begin
 				Sa <= "00"; Sid <= "000"; Sbb <= IR(4 downto 0); Sbc <= "00000"; Sba <= IR(4 downto 0); Salu <= "00110"; LDF <= '1';
 				Smar <= '0'; Smbr <= '0'; WR <= '0'; RD <= '0'; INTout <= '0';
 			
+			-- Group 101
+				
+			when m80 => -- Fetch ST32l
+				Sa <= "01"; Sid <= "001"; Sbb <= "00000"; Sbc <= "00000"; Sba <= "00000"; Salu <= "00000"; LDF <= '0';
+				Smar <= '1'; Smbr <= '0'; WR <= '0'; RD <= '1'; INTout <= '0';
+			
+			when m81 => -- ST32l to ADl Fetch ST32h 
+				Sa <= "01"; Sid <= "001"; Sbb <= "00000"; Sbc <= "00000"; Sba <= "10011"; Salu <= "00000"; LDF <= '0';
+				Smar <= '1'; Smbr <= '0'; WR <= '0'; RD <= '1'; INTout <= '0';
+			
+			when m82 => -- ST32h to ADh
+				Sa <= "00"; Sid <= "000"; Sbb <= "00000"; Sbc <= "00000"; Sba <= "10010"; Salu <= "00000"; LDF <= '0';
+				Smar <= '0'; Smbr <= '0'; WR <= '0'; RD <= '0'; INTout <= '0';
+				
+			when m83 => -- RAM[AD] = R
+				Sa <= "00"; Sid <= "000"; Sbb <= IR(4 downto 0); Sbc <= "00000"; Sba <= "00000"; Salu <= "00000"; LDF <= '0';
+				Smar <= '1'; Smbr <= '1'; WR <= '1'; RD <= '0'; INTout <= '0';
+			
+			when m84 => -- Fetch RAM[AD]
+				Sa <= "00"; Sid <= "000"; Sbb <= "00000"; Sbc <= "00000"; Sba <= "00001"; Salu <= "00000"; LDF <= '0';
+				Smar <= '1'; Smbr <= '0'; WR <= '0'; RD <= '1'; INTout <= '0';
+				
+			when m85 => -- DI to TMP
+				Sa <= "00"; Sid <= "000"; Sbb <= "00000"; Sbc <= "00000"; Sba <= "00001"; Salu <= "00000"; LDF <= '0';
+				Smar <= '0'; Smbr <= '0'; WR <= '0'; RD <= '0'; INTout <= '0';
+			
+			when m86 => -- R = TMP
+				Sa <= "00"; Sid <= "000"; Sbb <= "00001"; Sbc <= "00000"; Sba <= IR(4 downto 0); Salu <= "00000"; LDF <= '0';
+				Smar <= '0'; Smbr <= '0'; WR <= '0'; RD <= '0'; INTout <= '0';
+				
+			when m87 => -- R = R + TMP
+				Sa <= "00"; Sid <= "000"; Sbb <= IR(4 downto 0); Sbc <= "00001"; Sba <= IR(4 downto 0); Salu <= "00010"; LDF <= '1';
+				Smar <= '0'; Smbr <= '0'; WR <= '0'; RD <= '0'; INTout <= '0';
+				
+			when m88 => -- R = R - TMP
+				Sa <= "00"; Sid <= "000"; Sbb <= IR(4 downto 0); Sbc <= "00001"; Sba <= IR(4 downto 0); Salu <= "00011"; LDF <= '1';
+				Smar <= '0'; Smbr <= '0'; WR <= '0'; RD <= '0'; INTout <= '0';
+				
+			when m89 => -- CMP(TMP, R)
+				Sa <= "00"; Sid <= "000"; Sbb <= IR(4 downto 0); Sbc <= "00001"; Sba <= "00000"; Salu <= "00011"; LDF <= '1';
+				Smar <= '0'; Smbr <= '0'; WR <= '0'; RD <= '0'; INTout <= '0';
+				
+			when m90 => -- R = R and TMP
+				Sa <= "00"; Sid <= "000"; Sbb <= IR(4 downto 0); Sbc <= "00001"; Sba <= IR(4 downto 0); Salu <= "00101"; LDF <= '1';
+				Smar <= '0'; Smbr <= '0'; WR <= '0'; RD <= '0'; INTout <= '0';
+				
+			when m91 => -- R = R or TMP
+				Sa <= "00"; Sid <= "000"; Sbb <= IR(4 downto 0); Sbc <= "00001"; Sba <= IR(4 downto 0); Salu <= "00100"; LDF <= '1';
+				Smar <= '0'; Smbr <= '0'; WR <= '0'; RD <= '0'; INTout <= '0';
+				
+			when m92 => -- R = R xor TMP
+				Sa <= "00"; Sid <= "000"; Sbb <= IR(4 downto 0); Sbc <= "00001"; Sba <= IR(4 downto 0); Salu <= "00110"; LDF <= '1';
+				Smar <= '0'; Smbr <= '0'; WR <= '0'; RD <= '0'; INTout <= '0';
+				
 			when others =>
 				Sa <= "00"; Sid <= "000"; Sbb <= "00000"; Sbc <= "00000"; Sba <= "00000"; Salu <= "00000"; LDF <= '0';
 				Smar <= '0'; Smbr <= '0'; WR <= '0'; RD <= '0'; INTout <= '0';
