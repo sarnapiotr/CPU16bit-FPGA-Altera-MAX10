@@ -1,7 +1,7 @@
 # 16-bit CPU Design and Implementation on FPGA
 
 ## Project Description and Characteristics
----
+
 The goal of this project was to design and implement a custom 16-bit Central Processing Unit (CPU) architecture using the VHDL hardware description language. The system is deployed on an Intel/Altera MAX 10 FPGA.
 
 **Full Documentation:** [CPU16bit-FPGA-Altera-MAX10.pdf](CPU16bit-FPGA-Altera-MAX10.pdf)
@@ -14,19 +14,19 @@ The processor features a multi-cycle architecture managed by a complex control u
 * **Memory:** 2 KB of Synchronous RAM (1024 x 16-bit words).
 
 ## Integrated System Structure
----
+
 The system is constructed by integrating individual modules (ALU, Register File, MMU, Control Unit, RAM) into a single top-level entity. The internal buses handle data transfer between these components.
 
 ![Integrated_CPU_Schematic](CPU16bit-FPGA-Altera-MAX10/CPU16bit-FPGA-Altera-MAX10.png)
 
 ## Control Unit State Machine
----
+
 The core of the processor is a Finite State Machine (FSM) consisting of **56 states**. This unit manages the Fetch, Decode, and Execute cycles, orchestrating the operation of all other modules based on the instruction currently in the Instruction Register.
 
 ![Control_Unit FSM](CPU16bit-FPGA-Altera-MAX10/ControlUnitMachineViewer.png)
 
 ## Example Operation
----
+
 The processor memory is initialized using a Memory Initialization File (MIF). The example below demonstrates a test program loaded into the RAM.
 
 ![MIF File Content](CPU16bit-FPGA-Altera-MAX10/mifFileContent.png)
@@ -46,11 +46,11 @@ The image below shows the physical implementation on the FPGA board after execut
 ![FPGA Implementation Result](CPU16bit-FPGA-Altera-MAX10/DE10LiteResult.png)
 
 ## Hardware
----
+
 **Development Board:**
 * Terasic DE10-Lite (Intel MAX 10 10M50DAF484C7G FPGA)
 
 ## Software
----
+
 **Development Environment:**
 * Intel Quartus Prime Lite Edition 23.1.1
