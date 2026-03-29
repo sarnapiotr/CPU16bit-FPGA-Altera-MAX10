@@ -45,12 +45,12 @@ The image below shows the physical implementation on the FPGA board after execut
 
 ![FPGA Implementation Result](CPU16bit-FPGA-Altera-MAX10/DE10LiteResult.png)
 
-## Hardware
+## Hardware Used
 
 **Development Board:**
 * Terasic DE10-Lite (Intel MAX 10 10M50DAF484C7G FPGA)
 
-## Software
+## Software Used
 
 **Development Environment:**
 * Intel Quartus Prime Lite Edition 23.1.1
